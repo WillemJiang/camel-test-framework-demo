@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configures the Camel Context-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">
+    <!-- send the message to an endpoint which is not open for business to test the circuit breaker-->
+    <route>
+      <from uri="direct:start"/>
+      <doTry>
+        <loadBalance>
+          <circuitBreaker threshold="1" halfOpenAfter="1000">
+            <exception>org.apache.camel.demo.MyCustomException</exception>
+          </circuitBreaker>
+          <to uri="mock:result"/>
+        </loadBalance>
+        <doCatch>
+          <exception>org.apache.camel.demo.MyCustomException</exception>
+          <to uri="mock:error"/>
+        </doCatch>
+        <doCatch>
+          <!-- this exception is thrown when the circuit breaker is open -->
+          <exception>java.util.concurrent.RejectedExecutionException</exception>
+          <to uri="mock:catcher" />
+        </doCatch>
+      </doTry>
+    </route>
+  </camelContext>
+
+</beans>
