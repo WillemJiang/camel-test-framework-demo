@@ -30,12 +30,7 @@ public class CamelCircuitBreakTest extends CamelSpringTestSupport {
     public void testCircuitBreakIsOpen() throws Exception {
         result.reset();
         // Just to make sure the MyCustomerException is thrown
-        result.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                exchange.setException(new MyCustomException());
-            }
-        });
+        result.whenAnyExchangeReceived((Exchange exchange) -> exchange.setException(new MyCustomException()));
 
         template.sendBody("direct:start", "Test message");
         Thread.sleep(100);
@@ -44,12 +39,10 @@ public class CamelCircuitBreakTest extends CamelSpringTestSupport {
         template.sendBody("direct:start", "Test message");
 
         error.expectedMessageCount(1);
-        error.expectedMessagesMatches(new Predicate() {
-            @Override public boolean matches(Exchange exchange) {
+        error.expectedMessagesMatches((Exchange exchange) -> {
                 String message = exchange.getIn().getBody(String.class);
                 return message.contains("Test message");
-            }
-        });
+            });
 
         result.expectedMessageCount(1);
         // The circuritBreak is Open
@@ -64,12 +57,7 @@ public class CamelCircuitBreakTest extends CamelSpringTestSupport {
     public void testCircuitBreakIsHalfOpen() throws Exception {
         result.reset();
         // Just to make sure the MyCustomerException is thrown
-        result.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                exchange.setException(new MyCustomException());
-            }
-        });
+        result.whenAnyExchangeReceived((Exchange exchange) -> exchange.setException(new MyCustomException()));
 
         template.sendBody("direct:start", "Test message");
         Thread.sleep(1000);
@@ -78,11 +66,9 @@ public class CamelCircuitBreakTest extends CamelSpringTestSupport {
         template.sendBody("direct:start", "Test message");
 
         error.expectedMessageCount(2);
-        error.expectedMessagesMatches(new Predicate() {
-            @Override public boolean matches(Exchange exchange) {
-                String message = exchange.getIn().getBody(String.class);
-                return message.contains("Test message");
-            }
+        error.expectedMessagesMatches((Exchange exchange) -> {
+          String message = exchange.getIn().getBody(String.class);
+          return message.contains("Test message");
         });
 
         result.expectedMessageCount(2);

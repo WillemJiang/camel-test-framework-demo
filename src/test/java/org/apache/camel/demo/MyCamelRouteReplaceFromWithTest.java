@@ -37,14 +37,11 @@ public class MyCamelRouteReplaceFromWithTest extends MyCamelRouteAdviceWithTest 
 
         uk.expectedMessageCount(0);
         others.expectedMessageCount(2);
-        others.expectedMessagesMatches(new Predicate() {
-            @Override
-            public boolean matches(Exchange exchange) {
+        others.expectedMessagesMatches((Exchange exchange)->{
                 String message = exchange.getIn().getBody(String.class);
                 return !message.contains("London");
-            }
         });
-
+        
         // sending the message to the direct:start
         template.sendBody("direct:start", TEST_FIRST_MESSAGE);
         template.sendBody("direct:start", TEST_SECOND_MESSAGE);

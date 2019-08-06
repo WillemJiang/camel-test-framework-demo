@@ -15,21 +15,15 @@ public class MyCamelRouteTest extends AbstractMyCameRouteTest {
     public void testCRBMessage() throws Exception {
 
         uk.expectedMessageCount(1);
-        uk.expectedMessagesMatches(new Predicate() {
-            @Override
-            public boolean matches(Exchange exchange) {
+        uk.expectedMessagesMatches((Exchange exchange) -> {
                 String message = exchange.getIn().getBody(String.class);
                 return message.contains("London");
-            }
-        });
+            });
         others.expectedMessageCount(1);
-        others.expectedMessagesMatches(new Predicate() {
-            @Override
-            public boolean matches(Exchange exchange) {
+        others.expectedMessagesMatches((Exchange exchange) -> {
                 String message = exchange.getIn().getBody(String.class);
                 return !message.contains("London");
-            }
-        });
+            });
 
         assertMockEndpointsSatisfied();
 

@@ -29,12 +29,7 @@ public class CamelErrorHandlerTest extends CamelSpringTestSupport {
     @Test
     public void testErrorHandlerMessage() throws Exception {
         // Just to make sure the MyCustomerException is thrown
-        result.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                exchange.setException(new MyCustomException());
-            }
-        });
+        result.whenAnyExchangeReceived((Exchange exchange) -> exchange.setException(new MyCustomException()));
 
         template.sendBody("direct:start", "Test message");
         Thread.sleep(1000);
@@ -43,11 +38,9 @@ public class CamelErrorHandlerTest extends CamelSpringTestSupport {
         template.sendBody("direct:start", "Test message");
 
         error.expectedMessageCount(3);
-        error.expectedMessagesMatches(new Predicate() {
-            @Override public boolean matches(Exchange exchange) {
-                String message = exchange.getIn().getBody(String.class);
-                return message.contains("Test message");
-            }
+        error.expectedMessagesMatches((Exchange exchange) -> {
+            String message = exchange.getIn().getBody(String.class);
+            return message.contains("Test message");
         });
 
         // The FatalFallbackErrorHandler always send the message twice here
