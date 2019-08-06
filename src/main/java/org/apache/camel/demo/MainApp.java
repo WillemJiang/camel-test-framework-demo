@@ -14,6 +14,7 @@ public class MainApp {
 
     /**
      * A main() so we can easily run these routing rules in our IDE
+     * You can start the camel context with different method
      */
     public static void main(String... args) throws Exception {
         // Start with camel main wrapper
@@ -49,7 +50,6 @@ public class MainApp {
 
     private static void startWithCamelMainWrapper(String[] args) throws Exception {
         Main main = new Main();
-        main.enableHangupSupport();
         main.addRouteBuilder(new MyRouteBuilder());
         main.run(args);
     }

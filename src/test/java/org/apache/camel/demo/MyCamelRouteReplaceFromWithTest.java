@@ -21,7 +21,8 @@ public class MyCamelRouteReplaceFromWithTest extends MyCamelRouteAdviceWithTest 
 
     protected void doPostSetup() throws Exception {
         super.doPostSetup();
-
+        
+        // If we don't want to feed the route with some other message you can redefine the route with AdviceWith
         context.getRouteDefinitions().get(0).adviceWith(context, new AdviceWithRouteBuilder() {
             @Override
             public void configure() throws Exception {
